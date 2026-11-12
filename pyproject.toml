@@ -4,7 +4,10 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "ollama>=0.6.3",
+    "pydantic-settings>=2.16.2",
+]
 
 [project.scripts]
 personal-assistant = "personal_assistant:main"
