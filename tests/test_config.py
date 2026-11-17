@@ -34,3 +34,22 @@ def test_invalid_provider_is_rejected(monkeypatch: pytest.MonkeyPatch, tmp_path:
 
     with pytest.raises(ValidationError):
         Settings()
+
+
+def test_secrets_dir(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.chdir(tmp_path)
+
+    s = Settings()
+
+    assert s.credentials_path == Path("secrets") / "credentials.json"
+    assert s.token_path == Path("secrets") / "token.json"
+
+
+def test_secrets_dir_from_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("ASSISTANT_SECRETS_DIR", "elsewhere")
+
+    s = Settings()
+
+    assert s.credentials_path == Path("elsewhere") / "credentials.json"
+    assert s.token_path == Path("elsewhere") / "token.json"
