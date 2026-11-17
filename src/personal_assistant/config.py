@@ -15,3 +15,14 @@ class Settings(BaseSettings):
     @property
     def db_path(self) -> Path:
         return self.data_dir / "assistant.db"
+
+    # Paths for Oauth to gmail
+    secrets_dir: Path = Path("secrets")
+
+    @property
+    def credentials_path(self) -> Path:
+        return self.secrets_dir / "credentials.json"
+
+    @property
+    def token_path(self) -> Path:
+        return self.secrets_dir / "token.json"
