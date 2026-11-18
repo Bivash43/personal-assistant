@@ -40,3 +40,11 @@ line-ending = "lf"
 python_version = "3.12"
 strict = true
 files = ["src"]
+
+[[tool.mypy.overrides]]
+module = ["google_auth_oauthlib.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["personal_assistant.gmail.*"]
+disallow_untyped_calls = false
