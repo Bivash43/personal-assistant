@@ -27,4 +27,3 @@ def test_save_token_tightens_existing_permissions(tmp_path: Path) -> None:
 
     assert token_path.stat().st_mode & 0o777 == 0o600
     assert token_path.read_text(encoding="utf-8") == '{"token": "abc"}'
-
