@@ -66,3 +66,11 @@ def test_max_results_has_a_floor_of_one() -> None:
     search_emails(service, "x", max_results=0)
 
     assert messages.list.call_args.kwargs["maxResults"] == 1
+
+
+def test_days_back_adds_newer_than() -> None:
+    service, messages = make_service({}, make_raw())
+
+    search_emails(service, "from:google.com", days_back=7)
+
+    assert messages.list.call_args.kwargs["q"] == "from:google.com newer_than:7d"
