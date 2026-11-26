@@ -33,7 +33,7 @@ def format_summaries(summaries: list[EmailSummary]) -> str:
 
 def make_gmail_tools(service: Any) -> list[BaseTool]:
     @tool
-    def search_gmail(query: str, max_results: int = 10) -> str:
+    def search_gmail(query: str, max_results: int = 10, days_back: int | None = None) -> str:
         """Search the user's Gmail mailbox (read-only) and list matching emails.
 
         Write `query` in Gmail search syntax. Examples: `from:alice@example.com`,
@@ -43,7 +43,10 @@ def make_gmail_tools(service: Any) -> list[BaseTool]:
         Returns one line per email with its id, date, sender, subject and a short
         preview. It does not return full email bodies. `max_results` is how many
         emails to return (default 10, at most 25).
+
+        `days_back` limits results to emails from the last N days. Use 1 for "today",
+        7 for "this week", 30 for "this month". Leave it out for no date limit.
         """
-        return format_summaries(search_emails(service, query, max_results))
+        return format_summaries(search_emails(service, query, max_results, days_back))
 
     return [search_gmail]
