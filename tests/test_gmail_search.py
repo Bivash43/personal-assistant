@@ -75,13 +75,15 @@ def test_days_back_adds_newer_than() -> None:
 
     assert messages.list.call_args.kwargs["q"] == "from:google.com newer_than:7d"
 
+
 def test_days_back_clamp() -> None:
     service, messages = make_service({}, make_raw())
 
     search_emails(service, "from:google.com", days_back=1000)
 
     assert messages.list.call_args.kwargs["q"] == "from:google.com newer_than:365d"
-    
+
+
 def test_days_back_has_a_floor_of_one() -> None:
     service, messages = make_service({}, make_raw())
 
