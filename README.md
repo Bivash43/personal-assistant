@@ -21,25 +21,47 @@ Objectives:
 
 Each item uses one of three states: **Built**, **In progress**, or **Planned**. Features without implementation in `src/` are marked **Planned**.
 
-| Phase | Feature | Status | Notes |
-| --- | --- | --- | --- |
-| Core | Typed settings from env vars and `.env` | Built | `ASSISTANT_*` prefix; `Settings.db_path` is defined ahead of SQLite storage |
-| Core | LLM factory (Ollama) | Built | `openai` and `anthropic` raise `NotImplementedError` |
-| Core | Tool-calling loop | Built | Step limit (`max_steps=5`), unknown-tool handling, tool errors returned as messages |
-| Core | Date-aware system prompt builder | Built | Injects today's date and numbered rules |
-| Core | Offline unit tests | Built | 37 tests using `FakeLLM`, mocked Gmail service, and `tmp_path` |
-| Core | CLI entrypoint | Planned | `personal_assistant.main` is still a placeholder |
-| Core | SQLite action log | Planned | No implementation yet (only `Settings.db_path` exists) |
-| Core | Approval gate | Planned | No implementation yet |
-| Core | LangGraph migration | Planned | — |
-| Core | Cloud providers (OpenAI, Anthropic) | Planned | — |
-| Phase 1: Email (read, search, draft) via the Gmail API | Gmail OAuth login (desktop flow, token refresh) | Built | `gmail.readonly` scope; saves token with `0o600` permissions |
-| Phase 1: Email (read, search, draft) via the Gmail API | Gmail search tool (`search_gmail`) | Built | Query, result cap (`<= 25`), `days_back` filter (`<= 365`), one-line metadata output |
-| Phase 1: Email (read, search, draft) via the Gmail API | Reading a full email body | Planned | — |
-| Phase 1: Email (read, search, draft) via the Gmail API | Creating email drafts | Planned | — |
-| Phase 2: Calendar scheduling and conflict checking | Calendar scheduling and conflict checking | Planned | — |
-| Phase 3: Notes and personal knowledge base (Markdown/Obsidian) | Notes and personal knowledge base (Markdown/Obsidian) | Planned | — |
-| Phase 4: Proactive background automation, optional MCP conversion | Proactive background automation, optional MCP conversion | Planned | — |
+### Core
+
+| Feature | Status | Notes |
+| --- | --- | --- |
+| Typed settings from env vars and `.env` | Built | `ASSISTANT_*` prefix; `Settings.db_path` is defined ahead of SQLite storage |
+| LLM factory (Ollama) | Built | `openai` and `anthropic` raise `NotImplementedError` |
+| Tool-calling loop | Built | Step limit (`max_steps=5`), unknown-tool handling, tool errors returned as messages |
+| Date-aware system prompt builder | Built | Injects today's date and numbered rules |
+| Offline unit tests | Built | Uses `FakeLLM`, mocked Gmail service, and `tmp_path` |
+| CLI entrypoint | Planned | `personal_assistant.main` is still a placeholder |
+| SQLite action log | Planned | No implementation yet (only `Settings.db_path` exists) |
+| Approval gate | Planned | No implementation yet |
+| LangGraph migration | Planned | — |
+| Cloud providers (OpenAI, Anthropic) | Planned | — |
+
+### Phase 1: Email
+
+| Feature | Status | Notes |
+| --- | --- | --- |
+| Gmail OAuth login (desktop flow, token refresh) | Built | `gmail.readonly` scope; saves token with `0o600` permissions |
+| Gmail search tool (`search_gmail`) | Built | Query, result cap (`<= 25`), `days_back` filter (`<= 365`), one-line metadata output |
+| Reading a full email body | Planned | — |
+| Creating email drafts | Planned | — |
+
+### Phase 2: Calendar
+
+| Feature | Status | Notes |
+| --- | --- | --- |
+| Calendar scheduling and conflict checking | Planned | — |
+
+### Phase 3: Notes and knowledge base
+
+| Feature | Status | Notes |
+| --- | --- | --- |
+| Notes and personal knowledge base (Markdown/Obsidian) | Planned | — |
+
+### Phase 4: Background automation and MCP
+
+| Feature | Status | Notes |
+| --- | --- | --- |
+| Proactive background automation, optional MCP conversion | Planned | — |
 
 ## Architecture
 
@@ -47,10 +69,15 @@ The project separates model orchestration, tool formatting, Gmail querying/parsi
 
 ```mermaid
 flowchart LR
-    model["Model & agent loop (llm.py, agent.py, prompts.py)"] --> tool["Tool & formatter (gmail/tools.py)"]
-    tool --> search["Search & parser (gmail/search.py, gmail/messages.py)"]
-    search --> api["Gmail API & OAuth (gmail/auth.py)"]
+    model["Model and agent loop"] --> tool["Tool and formatter"]
+    tool --> search["Search and parser"]
+    search --> api["Gmail API"]
+    auth["OAuth credentials"] --> service["Gmail service (built by the caller; no builder in src yet)"]
+    service --> tool
+    service --> search
 ```
+
+Modules by layer: `llm.py`, `agent.py`, and `prompts.py` (model and agent loop); `gmail/tools.py` (tool and formatter); `gmail/search.py` and `gmail/messages.py` (search and parser); `gmail/auth.py` (OAuth credentials).
 
 Safety checks and boundaries currently implemented in each layer:
 
@@ -200,3 +227,7 @@ Commits start with a gitmoji shortcode followed by a short imperative summary, k
 - `:heavy_plus_sign:` adding dependencies
 - `:see_no_evil:` `.gitignore` updates
 - `:memo:` documentation and metadata
+
+## License
+
+MIT. See LICENSE.
