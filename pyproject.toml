@@ -1,7 +1,7 @@
 [project]
 name = "personal-assistant"
 version = "0.1.0"
-description = "Add your description here"
+description = "A modular, local-first personal AI assistant built with Python, LangGraph and Ollama, starting with read-only Gmail search."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
